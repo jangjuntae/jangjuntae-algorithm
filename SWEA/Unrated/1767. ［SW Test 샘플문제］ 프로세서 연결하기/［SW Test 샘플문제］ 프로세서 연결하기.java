@@ -33,9 +33,9 @@ public class Solution {
 			return;
 		}
 		
-		if(coreCount + core.size() - index < maxCore) {
+		/*if(coreCount + core.size() - index < maxCore) {
 			return;
-		}
+		}*/
 		
 		int x = core.get(index).x;
 		int y = core.get(index).y;
