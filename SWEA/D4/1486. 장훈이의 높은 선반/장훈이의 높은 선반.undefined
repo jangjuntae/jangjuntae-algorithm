@@ -11,6 +11,7 @@ class Solution
 	static void dfs(int depth, int sum) {
 		if(sum >= m) {
 			result = Math.min(result, sum - m);
+			return;
 		}
 		
 		if(depth == n) {
