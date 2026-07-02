@@ -1,0 +1,106 @@
+import java.util.*;
+import java.io.*;
+ 
+class Solution
+{
+	static int n;
+	static char[][] arr;
+	static int[][] counts;
+	static boolean[][] visited;
+	
+	static int[] dx = {-1, -1, -1, 0, 1, 1, 1, 0};
+	static int[] dy = {-1, 0, 1, 1, 1, 0, -1, -1};
+	
+	static int cnt(int x, int y) {
+		int count = 0;
+		for(int d = 0; d < 8; d++) {
+			int nx = x + dx[d];
+			int ny = y + dy[d];
+			
+			if(nx >= 0 && nx < n && ny >= 0 && ny < n) {
+				if(arr[nx][ny] == '*') {
+					count++;
+				}
+			}
+		}
+		return count;
+	}
+	
+	static void bfs(int x, int y) {
+		Queue<int[]> q = new LinkedList<>();
+		q.offer(new int[]{x, y});
+		visited[x][y] = true;
+		
+		while(!q.isEmpty()) {
+			int[] current = q.poll();
+			int cx = current[0];
+			int cy = current[1];
+			
+			if(counts[cx][cy] == 0) {
+				for(int d = 0; d < 8; d++) {
+					int nx = cx + dx[d];
+					int ny = cy + dy[d];
+					
+					if(nx >= 0 && nx < n && ny >= 0 && ny < n) {
+						if(!visited[nx][ny] && arr[nx][ny] != '*') {
+							visited[nx][ny] = true;
+							q.offer(new int[] {nx, ny});
+						}
+					}
+				}
+			}
+		}
+	}
+	
+    public static void main(String args[]) throws Exception
+    {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+        
+        int T = Integer.parseInt(br.readLine());
+        
+        for(int t = 1; t <= T; t++) {
+        	n = Integer.parseInt(br.readLine());
+        	arr = new char[n][n];
+        	counts = new int[n][n];
+        	visited = new boolean[n][n];
+        	
+        	for(int i = 0; i < n; i ++) {
+        		String str = br.readLine();
+        		for(int j = 0; j < n; j++) {
+        			arr[i][j] = str.charAt(j);
+        		}
+        	}
+        	
+        	for(int i = 0; i < n; i ++) {
+        		for(int j = 0; j < n; j++) {
+        			if(arr[i][j] == '.') {
+        				counts[i][j] = cnt(i, j);
+        			}
+        		}
+        	}
+        	
+        	int result = 0;
+        	
+        	for(int i = 0; i < n; i++) {
+        		for(int j = 0; j < n; j++) {
+        			if(!visited[i][j] && arr[i][j] != '*' && counts[i][j] == 0) {
+        				result++;
+        				bfs(i, j);
+        			}
+        		}
+        	}
+        	
+        	for(int i = 0; i < n; i++) {
+        		for(int j = 0; j < n; j++) {
+        			if(!visited[i][j] && arr[i][j] != '*') {
+        				result++;
+        				visited[i][j] = true;
+        			}
+        		}
+        	}
+        	
+        	System.out.println("#" + t + " " + result);
+        }
+    }
+}
