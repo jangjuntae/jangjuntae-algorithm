@@ -2,51 +2,56 @@ import java.util.*;
 import java.io.*;
 
 class Solution {
-    public int[] solution(String[] operations) {
-        TreeMap<Integer, Integer> map = new TreeMap<>();
+    PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+    PriorityQueue<Integer> lazyMaxHeap = new PriorityQueue<>(Collections.reverseOrder());
+    PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+    PriorityQueue<Integer> lazyMinHeap = new PriorityQueue<>();
+    
+    public void progate(){
+        while(!lazyMaxHeap.isEmpty() && maxHeap.peek() == lazyMaxHeap.peek()){
+            maxHeap.poll();
+            lazyMaxHeap.poll();
+        }
         
-        for(String op : operations){
-            String[] s = op.split(" ");
+        while(!lazyMinHeap.isEmpty() && minHeap.peek() == lazyMinHeap.peek()){
+            minHeap.poll();
+            lazyMinHeap.poll();
+        }
+    }
+    public int[] solution(String[] operations) {
+        int[] answer = new int[2];
+        
+        for(int i = 0; i < operations.length; i++){
+            progate();
             
-            String cmd = s[0];
-            int num = Integer.parseInt(s[1]);
+            String[] query = operations[i].split(" ");
+            int num = Integer.parseInt(query[1]);
             
-            if(cmd.equals("I")){
-                map.put(num, map.getOrDefault(num, 0) + 1);
+            if(query[0].equals("I")){
+                maxHeap.offer(num);
+                minHeap.offer(num);
             }
             else{
-                if(map.isEmpty()){
-                    continue;
-                }
+                if(maxHeap.isEmpty()) continue;
                 
                 if(num == 1){
-                    int key = map.lastKey();
-                    
-                    if(map.get(key) == 1){
-                        map.remove(key);
-                    }
-                    else{
-                        map.put(key, map.get(key) - 1);
-                    }
+                    lazyMinHeap.offer(maxHeap.peek());
+                    maxHeap.poll();
                 }
                 else{
-                    int key = map.firstKey();
-                    
-                    if(map.get(key) == 1){
-                        map.remove(key);
-                    }
-                    else{
-                        map.put(key, map.get(key) - 1);
-                    }
+                    lazyMaxHeap.offer(minHeap.peek());
+                    minHeap.poll();
                 }
             }
         }
         
-        if(map.isEmpty()){
-            return new int[]{0, 0};
+        progate();
+        
+        if(!maxHeap.isEmpty()){
+            answer[0] = maxHeap.peek();
+            answer[1] = minHeap.peek();
         }
-        else{
-            return new int[]{map.lastKey(), map.firstKey()};
-        }
+        
+        return answer;
     }
 }
