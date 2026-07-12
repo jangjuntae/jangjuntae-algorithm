@@ -2,42 +2,51 @@ import java.util.*;
 import java.io.*;
 
 class Solution {
-    PriorityQueue<Integer> minHeap = new PriorityQueue<>();
-    PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
-    
     public int[] solution(String[] operations) {
-        int n = operations.length;
+        TreeMap<Integer, Integer> map = new TreeMap<>();
         
-        for(int i = 0; i < n; i++){
-            StringTokenizer st = new StringTokenizer(operations[i]);
-            String str = st.nextToken();
-            int k = Integer.parseInt(st.nextToken());
+        for(String op : operations){
+            String[] s = op.split(" ");
             
-            if(str.equals("I")){
-                maxHeap.offer(k);
-                minHeap.offer(k);
+            String cmd = s[0];
+            int num = Integer.parseInt(s[1]);
+            
+            if(cmd.equals("I")){
+                map.put(num, map.getOrDefault(num, 0) + 1);
             }
             else{
-                if(k < 0 && !minHeap.isEmpty()){ // 최소값
-                    int tmp = minHeap.poll();
-                    maxHeap.remove(tmp);
+                if(map.isEmpty()){
+                    continue;
                 }
-                else if(k > 0 && !maxHeap.isEmpty()){ // 최대값
-                    int tmp = maxHeap.poll();
-                    minHeap.remove(tmp);
+                
+                if(num == 1){
+                    int key = map.lastKey();
+                    
+                    if(map.get(key) == 1){
+                        map.remove(key);
+                    }
+                    else{
+                        map.put(key, map.get(key) - 1);
+                    }
+                }
+                else{
+                    int key = map.firstKey();
+                    
+                    if(map.get(key) == 1){
+                        map.remove(key);
+                    }
+                    else{
+                        map.put(key, map.get(key) - 1);
+                    }
                 }
             }
         }
         
-        int[] result = new int[2];
-        
-        if(!maxHeap.isEmpty()){
-            result[0] = maxHeap.poll();   
+        if(map.isEmpty()){
+            return new int[]{0, 0};
         }
-        if(!minHeap.isEmpty()){
-            result[1] = minHeap.poll();
+        else{
+            return new int[]{map.lastKey(), map.firstKey()};
         }
-        
-        return result;
     }
 }
